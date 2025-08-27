@@ -1,8 +1,25 @@
-<!-- Example: index.html -->
-<script type="module">
-  import * as api from './api.js';
-  window.api = api; // Expose to console
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Order Manager</h1>
+  <div id="message"></div>
+  <form id="order-form">
+    <input type="text" id="customer_name" placeholder="Customer Name" required>
+    <input type="date" id="order_date" required>
+    <button type="submit">Add Order</button>
+  </form>
+  <ul id="orders-list"></ul>
+  <script type="module">
+    import * as api from './api.js';
+    window.api = api; // Expose to console
 
-  api.getAllOrders().then(console.log)
-  api.createOrder({customer_name: "Test", order_date: "2025-08-27"}).then(console.log)
-</script>
+    api.getAllOrders().then(console.log)
+    api.createOrder({customer_name: "Test", order_date: "2025-08-27"}).then(console.log)
+  </script>
+</body>
+</html>
