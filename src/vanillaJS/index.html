@@ -1,0 +1,8 @@
+<!-- Example: index.html -->
+<script type="module">
+  import * as api from './api.js';
+  window.api = api; // Expose to console
+
+  api.getAllOrders().then(console.log)
+  api.createOrder({customer_name: "Test", order_date: "2025-08-27"}).then(console.log)
+</script>
