@@ -13,7 +13,7 @@ const OrderList = ({
     <div className='tab-content'>
       <div className='section-header'>
         <h2>
-          <i className='fas fa-receipt'></i> Orders Management
+          <i className='fas fa-receipt'></i> React Orders Management
         </h2>
         <div className='header-actions'>
           <button className='btn btn-success' onClick={onCreateNew}>

@@ -1,39 +1,85 @@
-import React from 'react';
-import './App.css';
-import Test from './test.js';
+import './app.css';
+import React, { useState } from 'react';
+import OrderList from './components/OrderList';
+import AddOrderForm from './components/AddOrderForm';
 
-function App() {
+const sampleOrders = [];
+
+export default function App() {
+  const [orders, setOrders] = useState(sampleOrders);
+  const [showForm, setShowForm] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+
+  const formatDate = (d) => (d ? new Date(d).toLocaleDateString() : '-');
+  const formatCurrency = (v) =>
+    typeof v === 'number'
+      ? `$${v.toFixed(2)}`
+      : `$${parseFloat(v || 0).toFixed(2)}`;
+
+  const handleCreateNew = () => {
+    setEditingOrder(null);
+    setShowForm(true);
+  };
+
+  const handleSave = (orderData, items = [], editingId) => {
+    if (editingId) {
+      setOrders((prev) =>
+        prev.map((o) => (o.id === editingId ? { ...o, ...orderData } : o))
+      );
+    } else {
+      const id = orders.length ? Math.max(...orders.map((o) => o.id)) + 1 : 1;
+      const total_amount = items.reduce(
+        (s, it) => s + it.quantity * it.unit_price,
+        0
+      );
+      setOrders((prev) => [
+        ...prev,
+        {
+          id,
+          customer_id: orderData.customer_id || 1,
+          order_date: orderData.order_date,
+          total_amount,
+        },
+      ]);
+    }
+    setShowForm(false);
+  };
+
+  const handleEdit = (id) => {
+    setEditingOrder(id);
+    setShowForm(true);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm(`Delete order #${id}?`))
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+  };
+
   return (
-    <div
-      style={{
-        padding: '20px',
-        textAlign: 'center',
-        background: 'linear-gradient(135deg, #ffb3d9 0%, #ff7b42 100%)',
-        minHeight: '100vh',
-        color: 'white',
-      }}
-    >
-      <Test />
-      <h1>UPDATED 999 - React Orders Management System</h1>
-      <h2>React is Working!</h2>
-      <p>If you see this message, React is running correctly.</p>
-      <button
-        style={{
-          padding: '10px 20px',
-          background: 'white',
-          color: '#ff7b42',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontSize: '16px',
-          marginTop: '20px',
-        }}
-        onClick={() => alert('Button clicked! React is interactive.')}
-      >
-        Test Button
-      </button>
+    <div className='app-root'>
+      <header className='app-header'>
+        <h1>
+          <i className='fas fa-shopping-cart'></i> React Orders Management
+          System
+        </h1>
+      </header>
+      <OrderList
+        orders={orders}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onCreateNew={handleCreateNew}
+        formatDate={formatDate}
+        formatCurrency={formatCurrency}
+      />
+
+      <AddOrderForm
+        show={showForm}
+        editingOrder={editingOrder}
+        onClose={() => setShowForm(false)}
+        onSave={handleSave}
+        showToast={(msg) => alert(msg)}
+        formatCurrency={formatCurrency}
+      />
     </div>
   );
 }
-
-export default App;
