@@ -1,25 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Order Manager</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <h1>Order Manager</h1>
-  <div id="message"></div>
-  <form id="order-form">
-    <input type="text" id="customer_name" placeholder="Customer Name" required>
-    <input type="date" id="order_date" required>
-    <button type="submit">Add Order</button>
-  </form>
-  <ul id="orders-list"></ul>
-  <script type="module">
-    import * as api from './api.js';
-    window.api = api; // Expose to console
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders Management - Vanilla JavaScript</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <i class="fas fa-shopping-cart"></i> VanillaJS - Orders Management
+          System
+        </h1>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-label">Total Orders:</span>
+            <span id="totalOrders" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Total Revenue:</span>
+            <span id="totalRevenue" class="stat-value">$0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Customers:</span>
+            <span id="totalCustomers" class="stat-value">0</span>
+          </div>
+        </div>
+      </header>
 
-    api.getAllOrders().then(console.log)
-    api.createOrder({customer_name: "Test", order_date: "2025-08-27"}).then(console.log)
-  </script>
-</body>
+      <nav class="tab-nav">
+        <button class="tab-button active" onclick="showTab('orders')">
+          Orders
+        </button>
+
+        <button class="tab-button" onclick="showTab('analytics')">
+          Analytics
+        </button>
+      </nav>
+
+      <!-- Orders Tab -->
+      <div id="orders" class="tab-content active">
+        <div class="section-header">
+          <h2><i class="fas fa-receipt"></i> Orders Management</h2>
+          <div class="header-actions">
+            <button class="btn btn-success" onclick="showCreateOrderModal()">
+              <i class="fas fa-shopping-cart"></i> New Order
+            </button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- Orders loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Analytics Tab -->
+      <div id="analytics" class="tab-content">
+        <div class="section-header">
+          <h2><i class="fas fa-chart-bar"></i> Analytics Dashboard</h2>
+          <button class="btn btn-secondary" onclick="refreshAnalytics()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+        <div class="analytics-grid">
+          <div class="analytics-card">
+            <h3><i class="fas fa-shopping-bag"></i> Product Performance</h3>
+            <div id="productStats" class="stats-list">
+              <!-- Product stats loaded here -->
+            </div>
+          </div>
+          <div class="analytics-card">
+            <h3><i class="fas fa-calendar-alt"></i> Date Range</h3>
+            <div id="dateRange" class="date-info">
+              <!-- Date range loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Order Modal (Combined functionality) -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content order-with-items-content">
+        <div class="modal-header">
+          <h3 id="orderModalTitle">Create New Order</h3>
+          <span class="close" onclick="closeOrderModal()">&times;</span>
+        </div>
+        <div class="order-details-section">
+          <h4>Order Details</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerId">Customer:</label>
+              <select id="customerId" required>
+                <option value="">Select Customer</option>
+                <option value="1">Alice Johnson</option>
+                <option value="2">Bob Smith</option>
+                <option value="3">Carol Davis</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="orderDate">Order Date:</label>
+              <input type="date" id="orderDate" required />
+            </div>
+          </div>
+        </div>
+        <div class="items-section">
+          <div class="section-header">
+            <h4>Order Items</h4>
+            <button
+              type="button"
+              class="btn btn-sm btn-primary"
+              onclick="addItemRow()"
+            >
+              <i class="fas fa-plus"></i> Add Item
+            </button>
+          </div>
+          <div id="itemsContainer">
+            <!-- Item rows added here -->
+          </div>
+          <div class="order-summary">
+            <strong>Total: $<span id="orderTotal">0.00</span></strong>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="closeOrderModal()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="createOrderWithItems()"
+          >
+            <i class="fas fa-shopping-cart"></i> Create Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Individual Order Item Modal -->
+    <div id="itemModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="itemModalTitle">Create New Item</h3>
+          <span class="close" onclick="closeItemModal()">&times;</span>
+        </div>
+        <form id="itemForm">
+          <div class="form-group">
+            <label for="itemOrderId">Order ID:</label>
+            <input type="number" id="itemOrderId" required />
+          </div>
+          <div class="form-group">
+            <label for="productId">Product:</label>
+            <select id="productId" required>
+              <option value="">Select Product</option>
+              <option value="1">Laptop Computer - $899.99</option>
+              <option value="2">Wireless Mouse - $29.99</option>
+              <option value="3">USB Keyboard - $49.99</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" min="1" value="1" required />
+          </div>
+          <div class="form-group">
+            <label for="unitPrice">Unit Price:</label>
+            <input type="number" id="unitPrice" step="0.01" min="0" required />
+          </div>
+          <div class="form-buttons">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeItemModal()"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save Item</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="loadingSpinner" class="loading-spinner" style="display: none">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <div id="toast" class="toast" style="display: none">
+      <span id="toastMessage"></span>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>

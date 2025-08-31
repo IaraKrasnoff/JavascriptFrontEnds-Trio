@@ -1,0 +1,70 @@
+import os DATABASE = os.path.abspath("ones_to_manys.db")
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnesToManys Manager (Vue.js)</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Masters & Details Manager</h1>
+      <section class="masters">
+        <h2>Masters</h2>
+        <form @submit.prevent="addMaster">
+          <input
+            v-model="newMasterName"
+            placeholder="New Order name"
+            required
+          />
+          <button type="submit">Add Master</button>
+        </form>
+        <ul>
+          <li
+            v-for="master in masters"
+            :key="master.id"
+            :class="{selected: master.id === selectedMasterId}"
+          >
+            <span @click="selectMaster(master.id)">{{ master.name }}</span>
+            <button @click="editMaster(master)">Edit</button>
+            <button @click="deleteMaster(master.id)">Delete</button>
+          </li>
+        </ul>
+        <div v-if="editingMaster">
+          <input v-model="editingMaster.name" required />
+          <button @click="updateMaster">Save</button>
+          <button @click="cancelEditMaster">Cancel</button>
+        </div>
+      </section>
+      <section class="details" v-if="selectedMaster">
+        <h2>Details for: {{ selectedMaster.name }}</h2>
+        <form @submit.prevent="addDetail">
+          <input
+            v-model="newDetailDesc"
+            placeholder="New detail description"
+            required
+          />
+          <button type="submit">Add Detail</button>
+        </form>
+        <ul>
+          <li v-for="detail in details" :key="detail.id">
+            <span>{{ detail.description }}</span>
+            <button @click="editDetail(detail)">Edit</button>
+            <button @click="deleteDetail(detail.id)">Delete</button>
+          </li>
+        </ul>
+        <div v-if="editingDetail">
+          <input v-model="editingDetail.description" required />
+          <button @click="updateDetail">Save</button>
+          <button @click="cancelEditDetail">Cancel</button>
+        </div>
+      </section>
+      <div v-if="loading" class="loading">Loading...</div>
+      <div v-if="error" class="error">{{ error }}</div>
+    </div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
