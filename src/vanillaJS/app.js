@@ -471,4 +471,17 @@ const app = createApp({
 });
 
 // Mount the Vue application
-app.mount('#app');
+const vm = app.mount('#app');
+
+// Expose selected methods as globals so the vanilla HTML onclick handlers work
+window.vueApp = vm;
+window.showCreateOrderModal = () => vm.showCreateOrderModal();
+window.addItemRow = () => vm.addItemRow();
+window.closeOrderModal = () => vm.closeOrderModal();
+window.createOrderWithItems = () => vm.createOrderWithItems();
+window.editOrder = (order) => vm.editOrder(order);
+window.deleteOrder = (id) => vm.deleteOrder(id);
+window.refreshAnalytics = () => vm.refreshAnalytics();
+window.showCreateItemModal = () =>
+  vm.showCreateItemModal && vm.showCreateItemModal();
+window.closeItemModal = () => vm.closeItemModal && vm.closeItemModal();

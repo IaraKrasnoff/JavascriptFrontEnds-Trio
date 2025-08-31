@@ -4,19 +4,386 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Orders Management - Vanilla JavaScript</title>
-    <link rel="stylesheet" href="styles.css" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      header h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .stats-bar {
+        display: flex;
+        justify-content: space-around;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 20px;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-label {
+        display: block;
+        font-size: 0.9em;
+        opacity: 0.9;
+        margin-bottom: 5px;
+      }
+
+      .stat-value {
+        display: block;
+        font-size: 1.8em;
+        font-weight: bold;
+      }
+
+      .tab-nav {
+        display: flex;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 15px 20px;
+        background: white;
+        border: none;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tab-button:hover {
+        background: #f8f9fa;
+      }
+
+      .tab-button.active {
+        background: #667eea;
+        color: white;
+        border-bottom-color: #ffd700;
+      }
+
+      .tab-content {
+        display: none;
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e9ecef;
+      }
+
+      .section-header h2 {
+        color: #495057;
+        font-size: 1.8em;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.9em;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+      }
+
+      th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      tr:hover td {
+        background-color: #f8f9fa;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-content {
+        background: white;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 800px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .close {
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+      }
+
+      .modal-body {
+        padding: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #495057;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 5px;
+        font-size: 1em;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .item-row {
+        display: grid;
+        grid-template-columns: 2fr 100px 120px 100px 40px;
+        gap: 15px;
+        align-items: end;
+        padding: 15px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      .remove-item-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .order-summary {
+        text-align: right;
+        padding: 20px;
+        background: #e9ecef;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-size: 1.3em;
+        color: #495057;
+      }
+
+      .form-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #28a745;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1500;
+        display: none;
+      }
+
+      .toast.error {
+        background: #dc3545;
+      }
+
+      .loading-spinner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+        .item-row {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>
-          <i class="fas fa-shopping-cart"></i> VanillaJS - Orders Management
-          System
-        </h1>
+        <h1><i class="fas fa-shopping-cart"></i> Orders Management System</h1>
         <div class="stats-bar">
           <div class="stat-item">
             <span class="stat-label">Total Orders:</span>
@@ -37,7 +404,6 @@
         <button class="tab-button active" onclick="showTab('orders')">
           Orders
         </button>
-
         <button class="tab-button" onclick="showTab('analytics')">
           Analytics
         </button>
@@ -86,132 +452,827 @@
               <!-- Product stats loaded here -->
             </div>
           </div>
-          <div class="analytics-card">
-            <h3><i class="fas fa-calendar-alt"></i> Date Range</h3>
-            <div id="dateRange" class="date-info">
-              <!-- Date range loaded here -->
+        </div>
+      </div>
+
+      <!-- Order Modal -->
+      <div id="orderModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="orderModalTitle">Create New Order</h3>
+            <span class="close" onclick="closeOrderModal()">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div class="order-details-section">
+              <h4>Order Details</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="customerId">Customer:</label>
+                  <select id="customerId" required>
+                    <option value="">Select Customer</option>
+                    <option value="1">Alice Johnson</option>
+                    <option value="2">Bob Smith</option>
+                    <option value="3">Carol Davis</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="orderDate">Order Date:</label>
+                  <input type="date" id="orderDate" required />
+                </div>
+              </div>
+            </div>
+
+            <div class="items-section">
+              <div class="section-header">
+                <h4>Order Items</h4>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-primary"
+                  onclick="addItemRow()"
+                >
+                  <i class="fas fa-plus"></i> Add Item
+                </button>
+              </div>
+              <div id="itemsContainer">
+                <!-- Item rows added here -->
+              </div>
+              <div class="order-summary">
+                <strong>Total: $<span id="orderTotal">0.00</span></strong>
+              </div>
+            </div>
+
+            <div class="form-buttons">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="closeOrderModal()"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="createOrderWithItems()"
+              >
+                <i class="fas fa-shopping-cart"></i> Create Order
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Main Order Modal (Combined functionality) -->
-    <div id="orderModal" class="modal">
-      <div class="modal-content order-with-items-content">
-        <div class="modal-header">
-          <h3 id="orderModalTitle">Create New Order</h3>
-          <span class="close" onclick="closeOrderModal()">&times;</span>
-        </div>
-        <div class="order-details-section">
-          <h4>Order Details</h4>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="customerId">Customer:</label>
-              <select id="customerId" required>
-                <option value="">Select Customer</option>
-                <option value="1">Alice Johnson</option>
-                <option value="2">Bob Smith</option>
-                <option value="3">Carol Davis</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="orderDate">Order Date:</label>
-              <input type="date" id="orderDate" required />
-            </div>
-          </div>
-        </div>
-        <div class="items-section">
-          <div class="section-header">
-            <h4>Order Items</h4>
-            <button
-              type="button"
-              class="btn btn-sm btn-primary"
-              onclick="addItemRow()"
-            >
-              <i class="fas fa-plus"></i> Add Item
-            </button>
-          </div>
-          <div id="itemsContainer">
-            <!-- Item rows added here -->
-          </div>
-          <div class="order-summary">
-            <strong>Total: $<span id="orderTotal">0.00</span></strong>
-          </div>
-        </div>
-        <div class="form-buttons">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            onclick="closeOrderModal()"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            class="btn btn-success"
-            onclick="createOrderWithItems()"
-          >
-            <i class="fas fa-shopping-cart"></i> Create Order
-          </button>
-        </div>
+      <!-- Toast Notification -->
+      <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
       </div>
     </div>
 
-    <!-- Individual Order Item Modal -->
-    <div id="itemModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 id="itemModalTitle">Create New Item</h3>
-          <span class="close" onclick="closeItemModal()">&times;</span>
-        </div>
-        <form id="itemForm">
+    <script>
+      // Global state management
+      const state = {
+        orders: [],
+        orderItems: [],
+        currentOrderItems: [],
+        editingOrder: null,
+        customers: {
+          1: 'Alice Johnson',
+          2: 'Bob Smith',
+          3: 'Carol Davis',
+        },
+        products: {
+          1: { name: 'Laptop Computer', price: 899.99 },
+          2: { name: 'Wireless Mouse', price: 29.99 },
+          3: { name: 'USB Keyboard', price: 49.99 },
+        },
+      };
+
+      // API Configuration
+      const API_BASE_URL = 'http://localhost:8000';
+
+      // API Functions
+      async function apiCall(endpoint, options = {}) {
+        showLoading(true);
+        try {
+          const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              ...options.headers,
+            },
+            ...options,
+          });
+
+          if (!response.ok) {
+            const errorData = await response
+              .json()
+              .catch(() => ({ detail: response.statusText }));
+            throw new Error(
+              errorData.detail ||
+                `HTTP ${response.status}: ${response.statusText}`
+            );
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error('API Error:', error);
+          throw error;
+        } finally {
+          showLoading(false);
+        }
+      }
+
+      async function getOrders() {
+        return await apiCall('/orders');
+      }
+
+      async function createOrderWithItemsAPI(orderData, items) {
+        const orderWithItemsData = {
+          customer_id: parseInt(orderData.customer_id),
+          order_date: orderData.order_date,
+          items: items.map((item) => ({
+            product_id: parseInt(item.product_id),
+            quantity: parseInt(item.quantity),
+            unit_price: parseFloat(item.unit_price),
+          })),
+        };
+
+        return await apiCall('/orders/with-items', {
+          method: 'POST',
+          body: JSON.stringify(orderWithItemsData),
+        });
+      }
+
+      async function getOrder(id) {
+        return await apiCall(`/orders/${id}`);
+      }
+
+      async function getOrderItemsByOrder(orderId) {
+        return await apiCall(`/orders/${orderId}/items`);
+      }
+
+      async function updateOrder(id, orderData) {
+        return await apiCall(`/orders/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(orderData),
+        });
+      }
+
+      async function deleteOrderById(id) {
+        return await apiCall(`/orders/${id}`, {
+          method: 'DELETE',
+        });
+      }
+
+      // Utility Functions
+      function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+      }
+
+      function formatCurrency(amount) {
+        if (amount === null || amount === undefined || isNaN(amount))
+          return '$0.00';
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(amount);
+      }
+
+      function getTodayDate() {
+        return new Date().toISOString().split('T')[0];
+      }
+
+      function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toast.className = 'toast';
+        if (type !== 'success') {
+          toast.classList.add(type);
+        }
+
+        toastMessage.textContent = message;
+        toast.style.display = 'block';
+
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 3000);
+      }
+
+      function showLoading(show = true) {
+        const spinner = document.getElementById('loadingSpinner');
+        spinner.style.display = show ? 'flex' : 'none';
+      }
+
+      // Tab Management
+      function showTab(tabName) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach((tab) => tab.classList.remove('active'));
+
+        // Remove active class from all buttons
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach((button) => button.classList.remove('active'));
+
+        // Show selected tab
+        const selectedTab = document.getElementById(tabName);
+        if (selectedTab) {
+          selectedTab.classList.add('active');
+        }
+
+        // Add active class to clicked button
+        event.target.classList.add('active');
+
+        // Load data for specific tabs
+        if (tabName === 'orders') {
+          loadOrders();
+        } else if (tabName === 'analytics') {
+          refreshAnalytics();
+        }
+      }
+
+      // Data Loading Functions
+      async function loadOrders() {
+        try {
+          const orders = await getOrders();
+          state.orders = orders;
+          renderOrdersTable();
+          updateStats();
+        } catch (error) {
+          console.error('Failed to load orders:', error);
+          showToast(
+            'Failed to load orders. Check if backend is running on localhost:8000',
+            'error'
+          );
+        }
+      }
+
+      function renderOrdersTable() {
+        const tbody = document.getElementById('ordersTableBody');
+        tbody.innerHTML = '';
+
+        if (state.orders.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                No orders found. Create your first order!
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        state.orders.forEach((order) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>#${order.id}</td>
+            <td>${
+              state.customers[order.customer_id] ||
+              `Customer ${order.customer_id}`
+            }</td>
+            <td>${formatDate(order.order_date)}</td>
+            <td>${formatCurrency(order.total_amount)}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-primary" onclick="editOrder(${
+                  order.id
+                })" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteOrder(${
+                  order.id
+                })" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      function updateStats() {
+        const totalOrders = state.orders.length;
+        const totalRevenue = state.orders.reduce(
+          (sum, order) => sum + (order.total_amount || 0),
+          0
+        );
+        const uniqueCustomers = new Set(state.orders.map((o) => o.customer_id))
+          .size;
+
+        document.getElementById('totalOrders').textContent = totalOrders;
+        document.getElementById('totalRevenue').textContent =
+          formatCurrency(totalRevenue);
+        document.getElementById('totalCustomers').textContent = uniqueCustomers;
+      }
+
+      // Modal Management
+      function showCreateOrderModal() {
+        state.editingOrder = null;
+        state.currentOrderItems = [];
+
+        // Reset form
+        document.getElementById('customerId').value = '';
+        document.getElementById('orderDate').value = getTodayDate();
+
+        // Clear and add first item row
+        document.getElementById('itemsContainer').innerHTML = '';
+        addItemRow();
+
+        // Reset modal for create mode
+        document.getElementById('orderModalTitle').textContent =
+          'Create New Order';
+        const createButton = document.querySelector('.btn-success');
+        createButton.innerHTML =
+          '<i class="fas fa-shopping-cart"></i> Create Order';
+
+        document.getElementById('orderModal').style.display = 'block';
+      }
+
+      function closeOrderModal() {
+        document.getElementById('orderModal').style.display = 'none';
+        state.editingOrder = null;
+        state.currentOrderItems = [];
+
+        // Reset button text for next time
+        const createButton = document.querySelector('.btn-success');
+        createButton.innerHTML =
+          '<i class="fas fa-shopping-cart"></i> Create Order';
+      }
+
+      // Item Management
+      function addItemRow() {
+        const container = document.getElementById('itemsContainer');
+        const itemIndex = state.currentOrderItems.length;
+
+        // Add to state
+        state.currentOrderItems.push({
+          product_id: '',
+          quantity: 1,
+          unit_price: 0,
+        });
+
+        addItemRowToDOM(itemIndex, {
+          product_id: '',
+          quantity: 1,
+          unit_price: 0,
+        });
+
+        // Update delete button visibility for all items
+        updateDeleteButtonVisibility();
+        updateOrderTotal();
+      }
+
+      function updateDeleteButtonVisibility() {
+        const itemRows = document.querySelectorAll('.item-row');
+        const totalItems = itemRows.length;
+
+        itemRows.forEach((row) => {
+          const deleteBtn = row.querySelector('.remove-item-btn');
+          if (deleteBtn) {
+            if (totalItems === 1) {
+              deleteBtn.style.visibility = 'hidden';
+            } else {
+              deleteBtn.style.visibility = 'visible';
+            }
+          }
+        });
+      }
+
+      function addItemRowWithData(itemData) {
+        const container = document.getElementById('itemsContainer');
+        const itemIndex = state.currentOrderItems.length - 1; // Already added to state
+
+        addItemRowToDOM(itemIndex, itemData);
+      }
+
+      function addItemRowToDOM(itemIndex, itemData, totalItems = null) {
+        const container = document.getElementById('itemsContainer');
+        const itemRow = document.createElement('div');
+        itemRow.className = 'item-row';
+        itemRow.dataset.index = itemIndex;
+
+        itemRow.innerHTML = `
           <div class="form-group">
-            <label for="itemOrderId">Order ID:</label>
-            <input type="number" id="itemOrderId" required />
-          </div>
-          <div class="form-group">
-            <label for="productId">Product:</label>
-            <select id="productId" required>
+            <label>Product:</label>
+            <select data-field="product_id" onchange="updateItemPrice(${itemIndex})" required>
               <option value="">Select Product</option>
-              <option value="1">Laptop Computer - $899.99</option>
-              <option value="2">Wireless Mouse - $29.99</option>
-              <option value="3">USB Keyboard - $49.99</option>
+              <option value="1" ${
+                itemData.product_id == 1 ? 'selected' : ''
+              }>Laptop Computer - $899.99</option>
+              <option value="2" ${
+                itemData.product_id == 2 ? 'selected' : ''
+              }>Wireless Mouse - $29.99</option>
+              <option value="3" ${
+                itemData.product_id == 3 ? 'selected' : ''
+              }>USB Keyboard - $49.99</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" min="1" value="1" required />
+            <label>Quantity:</label>
+            <input type="number" data-field="quantity" min="1" value="${
+              itemData.quantity
+            }" onchange="updateOrderTotal()" required />
           </div>
           <div class="form-group">
-            <label for="unitPrice">Unit Price:</label>
-            <input type="number" id="unitPrice" step="0.01" min="0" required />
+            <label>Unit Price:</label>
+            <input type="number" data-field="unit_price" step="0.01" min="0" value="${
+              itemData.unit_price
+            }" onchange="updateOrderTotal()" required />
           </div>
-          <div class="form-buttons">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              onclick="closeItemModal()"
-            >
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary">Save Item</button>
+          <div class="form-group">
+            <label>Total:</label>
+            <div class="item-total" style="padding: 12px; background: #f8f9fa; border-radius: 5px;">
+              ${formatCurrency(
+                (itemData.quantity || 0) * (itemData.unit_price || 0)
+              )}
+            </div>
           </div>
-        </form>
-      </div>
-    </div>
+          <button type="button" class="remove-item-btn" onclick="removeItemRow(${itemIndex})">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
 
-    <div id="loadingSpinner" class="loading-spinner" style="display: none">
-      <div class="spinner"></div>
-      <p>Loading...</p>
-    </div>
+        container.appendChild(itemRow);
+      }
 
-    <div id="toast" class="toast" style="display: none">
-      <span id="toastMessage"></span>
-    </div>
+      function removeItemRow(index) {
+        const itemRow = document.querySelector(
+          `.item-row[data-index="${index}"]`
+        );
+        if (itemRow) {
+          itemRow.remove();
+          state.currentOrderItems.splice(index, 1);
 
-    <script src="utils.js"></script>
-    <script src="api.js"></script>
-    <script src="app.js"></script>
+          // Reindex remaining rows and update onclick handlers
+          const remainingRows = document.querySelectorAll('.item-row');
+          remainingRows.forEach((row, newIndex) => {
+            row.dataset.index = newIndex;
+
+            // Update onclick handlers for remove button
+            const removeBtn = row.querySelector('.remove-item-btn');
+            if (removeBtn) {
+              removeBtn.onclick = () => removeItemRow(newIndex);
+            }
+
+            // Update onchange handlers for product select
+            const productSelect = row.querySelector(
+              'select[data-field="product_id"]'
+            );
+            if (productSelect) {
+              productSelect.onchange = () => updateItemPrice(newIndex);
+            }
+          });
+
+          // Update delete button visibility after removal
+          updateDeleteButtonVisibility();
+          updateOrderTotal();
+        }
+      }
+
+      function updateItemPrice(itemIndex) {
+        const itemRow = document.querySelector(
+          `.item-row[data-index="${itemIndex}"]`
+        );
+        if (!itemRow) return;
+
+        const productSelect = itemRow.querySelector(
+          'select[data-field="product_id"]'
+        );
+        const priceInput = itemRow.querySelector(
+          'input[data-field="unit_price"]'
+        );
+
+        const productId = productSelect.value;
+        const product = state.products[productId];
+
+        if (product && priceInput) {
+          priceInput.value = product.price;
+          state.currentOrderItems[itemIndex].unit_price = product.price;
+        }
+
+        updateOrderTotal();
+      }
+
+      function updateOrderTotal() {
+        let total = 0;
+
+        // Update item totals and calculate overall total
+        const itemRows = document.querySelectorAll('.item-row');
+        itemRows.forEach((row, index) => {
+          const quantityInput = row.querySelector(
+            'input[data-field="quantity"]'
+          );
+          const priceInput = row.querySelector(
+            'input[data-field="unit_price"]'
+          );
+          const totalDiv = row.querySelector('.item-total');
+
+          const quantity = parseFloat(quantityInput.value) || 0;
+          const price = parseFloat(priceInput.value) || 0;
+          const itemTotal = quantity * price;
+
+          totalDiv.textContent = formatCurrency(itemTotal);
+          total += itemTotal;
+
+          // Update state
+          if (state.currentOrderItems[index]) {
+            state.currentOrderItems[index].quantity = quantity;
+            state.currentOrderItems[index].unit_price = price;
+          }
+        });
+
+        document.getElementById('orderTotal').textContent =
+          formatCurrency(total);
+      }
+
+      // Order Operations
+      async function createOrderWithItems() {
+        // Get form data
+        const customerId = document.getElementById('customerId').value;
+        const orderDate = document.getElementById('orderDate').value;
+
+        // Validation
+        if (!customerId || !orderDate) {
+          showToast('Please fill in all order details', 'error');
+          return;
+        }
+
+        // Collect item data from DOM
+        const items = [];
+        const itemRows = document.querySelectorAll('.item-row');
+
+        for (let i = 0; i < itemRows.length; i++) {
+          const row = itemRows[i];
+          const productId = row.querySelector(
+            'select[data-field="product_id"]'
+          ).value;
+          const quantity = row.querySelector(
+            'input[data-field="quantity"]'
+          ).value;
+          const unitPrice = row.querySelector(
+            'input[data-field="unit_price"]'
+          ).value;
+
+          if (!productId || !quantity || !unitPrice) {
+            showToast('Please fill in all item details', 'error');
+            return;
+          }
+
+          if (quantity <= 0 || unitPrice <= 0) {
+            showToast('Quantity and price must be positive numbers', 'error');
+            return;
+          }
+
+          items.push({
+            product_id: productId,
+            quantity: quantity,
+            unit_price: unitPrice,
+          });
+        }
+
+        if (items.length === 0) {
+          showToast('Please add at least one item to the order', 'error');
+          return;
+        }
+
+        try {
+          const orderData = {
+            customer_id: customerId,
+            order_date: orderDate,
+          };
+
+          let result;
+
+          if (state.editingOrder) {
+            // Edit mode - update existing order
+            result = await updateOrderWithItems(
+              state.editingOrder.id,
+              orderData,
+              items
+            );
+            showToast(
+              `Order #${state.editingOrder.id} updated successfully with ${items.length} items!`
+            );
+          } else {
+            // Create mode - create new order
+            result = await createOrderWithItemsAPI(orderData, items);
+            showToast(
+              `Order #${result.order_id} created successfully with ${
+                items.length
+              } items! Total: ${formatCurrency(result.total_amount)}`
+            );
+          }
+
+          closeOrderModal();
+          await loadOrders();
+        } catch (error) {
+          console.error('Failed to save order:', error);
+          showToast(
+            'Failed to save order. Please check if your backend is running on localhost:8000',
+            'error'
+          );
+        }
+      }
+
+      async function updateOrderWithItems(orderId, orderData, items) {
+        // For editing, we'll use the existing createOrderWithItemsAPI endpoint
+        // since the backend likely handles updates through the same endpoint
+        // If your backend has a specific update endpoint, modify this accordingly
+        const orderWithItemsData = {
+          customer_id: parseInt(orderData.customer_id),
+          order_date: orderData.order_date,
+          items: items.map((item) => ({
+            product_id: parseInt(item.product_id),
+            quantity: parseInt(item.quantity),
+            unit_price: parseFloat(item.unit_price),
+          })),
+        };
+
+        // Try to use update endpoint, fallback to recreating
+        try {
+          return await apiCall(`/orders/${orderId}/with-items`, {
+            method: 'PUT',
+            body: JSON.stringify(orderWithItemsData),
+          });
+        } catch (error) {
+          // If PUT endpoint doesn't exist, we could implement alternative logic
+          // For now, just throw the error
+          throw new Error(
+            'Update endpoint not available. Please implement PUT /orders/{id}/with-items on your backend.'
+          );
+        }
+      }
+
+      async function deleteOrder(orderId) {
+        if (!confirm(`Are you sure you want to delete Order #${orderId}?`)) {
+          return;
+        }
+
+        try {
+          await deleteOrderById(orderId);
+          showToast('Order deleted successfully!');
+          await loadOrders();
+        } catch (error) {
+          console.error('Failed to delete order:', error);
+          showToast('Failed to delete order', 'error');
+        }
+      }
+
+      async function editOrder(orderId) {
+        try {
+          showLoading(true);
+
+          // Get order details
+          const order = await getOrder(orderId);
+          state.editingOrder = order;
+
+          // Get order items
+          const orderItems = await getOrderItemsByOrder(orderId);
+
+          // Populate form with existing data
+          document.getElementById('customerId').value = order.customer_id;
+          document.getElementById('orderDate').value = order.order_date;
+
+          // Clear current items and prepare state
+          document.getElementById('itemsContainer').innerHTML = '';
+          state.currentOrderItems = [];
+
+          if (orderItems.length > 0) {
+            // Load all items into state first
+            orderItems.forEach((item) => {
+              state.currentOrderItems.push({
+                product_id: item.product_id,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+              });
+            });
+
+            // Now render all items
+            state.currentOrderItems.forEach((item, index) => {
+              addItemRowToDOM(index, item);
+            });
+
+            // Update delete button visibility after all items are rendered
+            updateDeleteButtonVisibility();
+          } else {
+            // Add empty item row if no items exist
+            addItemRow();
+          }
+
+          // Update modal title and button
+          document.getElementById(
+            'orderModalTitle'
+          ).textContent = `Edit Order #${orderId}`;
+          const createButton = document.querySelector('.btn-success');
+          createButton.innerHTML = '<i class="fas fa-save"></i> Update Order';
+
+          document.getElementById('orderModal').style.display = 'block';
+          updateOrderTotal();
+        } catch (error) {
+          console.error('Failed to load order for editing:', error);
+          showToast('Failed to load order details', 'error');
+        } finally {
+          showLoading(false);
+        }
+      }
+
+      function refreshAnalytics() {
+        const totalOrders = state.orders.length;
+        const totalRevenue = state.orders.reduce(
+          (sum, order) => sum + (order.total_amount || 0),
+          0
+        );
+        const uniqueCustomers = new Set(state.orders.map((o) => o.customer_id))
+          .size;
+
+        document.getElementById('productStats').innerHTML = `
+          <div>Total Orders: ${totalOrders}</div>
+          <div>Total Revenue: ${formatCurrency(totalRevenue)}</div>
+          <div>Unique Customers: ${uniqueCustomers}</div>
+        `;
+
+        showToast('Analytics refreshed');
+      }
+
+      // Initialize Application
+      async function initApp() {
+        console.log(
+          'Vanilla JavaScript Orders Management Application initialized'
+        );
+
+        // Set default date
+        document.getElementById('orderDate').value = getTodayDate();
+
+        // Test backend connection
+        try {
+          const response = await fetch(`${API_BASE_URL}/`);
+          if (response.ok) {
+            console.log('API connection successful');
+            await loadOrders();
+          } else {
+            showToast('Cannot connect to backend server', 'error');
+          }
+        } catch (error) {
+          console.error('API connection failed:', error);
+          showToast(
+            'Cannot connect to backend. Make sure FastAPI server is running on localhost:8000',
+            'error'
+          );
+
+          // Load dummy data for demo
+          state.orders = [
+            {
+              id: 1,
+              customer_id: 1,
+              order_date: '2025-08-30',
+              total_amount: 899.99,
+            },
+            {
+              id: 2,
+              customer_id: 2,
+              order_date: '2025-08-30',
+              total_amount: 1799.98,
+            },
+          ];
+          renderOrdersTable();
+          updateStats();
+        }
+      }
+
+      // Event Listeners
+      document.addEventListener('DOMContentLoaded', initApp);
+
+      // Modal click outside to close
+      window.onclick = function (event) {
+        const modal = document.getElementById('orderModal');
+        if (event.target === modal) {
+          closeOrderModal();
+        }
+      };
+
+      // Form input listeners for real-time updates
+      document.addEventListener('input', function (event) {
+        if (
+          event.target.matches(
+            'input[data-field="quantity"], input[data-field="unit_price"]'
+          )
+        ) {
+          updateOrderTotal();
+        }
+      });
+
+      console.log('Vanilla JavaScript Orders Management System loaded!');
+    </script>
   </body>
 </html>
