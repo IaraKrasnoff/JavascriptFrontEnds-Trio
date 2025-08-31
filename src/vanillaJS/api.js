@@ -58,10 +58,10 @@ async function getOrder(id) {
   return await apiCall(`/orders/${id}`);
 }
 
-// Order Items API functions (using /order-items endpoints)
-async function getOrderItems() {
-  return await apiCall('/order-items');
-}
+// // Order Items API functions (using /order-items endpoints)
+// async function getOrderItems() {
+//   return await apiCall('/order-items');
+// }
 
 async function getOrderItemsByOrder(orderId) {
   return await apiCall(`/orders/${orderId}/items`);

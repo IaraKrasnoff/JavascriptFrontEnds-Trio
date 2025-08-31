@@ -1,0 +1,195 @@
+VanillaJS Orders Management System
+A comprehensive orders management system built with pure JavaScript frontend and FastAPI backend, demonstrating one-to-many relationships between orders and order items.
+
+Project Overview
+This application manages orders and their associated items, providing full CRUD (Create, Read, Update, Delete) operations with a clean, responsive user interface. The system uses a FastAPI backend with SQLite database and a pure JavaScript frontend with no frameworks.
+
+Features
+Core Functionality
+Order Management: Create, view, edit, and delete orders
+Order Items Management: Add, modify, and remove items from orders
+Customer Integration: Pre-defined customers with dropdown selection
+Product Catalog: Three sample products with automatic pricing
+Real-time Calculations: Automatic total calculation for orders and line items
+Analytics Dashboard: Basic statistics and reporting
+User Interface
+Tab-based Navigation: Switch between Orders, Items, and Analytics
+Modal Forms: Clean pop-up forms for data entry
+Responsive Design: Mobile-friendly interface
+Real-time Feedback: Toast notifications for user actions
+Loading States: Visual feedback during API operations
+Data Relationships
+One-to-Many: Each order can have multiple items
+Foreign Key Constraints: Data integrity through proper relationships
+Automatic Totals: Order totals update automatically when items change
+Technology Stack
+Frontend
+Pure JavaScript (ES6+)
+HTML5 with semantic markup
+CSS3 with modern features (Grid, Flexbox, Gradients)
+Font Awesome for icons
+Backend
+FastAPI (Python web framework)
+SQLite database
+Pydantic for data validation
+CORS middleware for cross-origin requests
+
+File Structure
+src/vanillaJS/
+├── index.html # Main HTML structure and UI
+├── styles.css # Complete styling and responsive design
+├── utils.js # Utility functions and helpers
+├── api.js # API communication layer
+├── app.js # Main application logic and event handling
+└── main.py # FastAPI backend server
+
+Setup Instructions
+Prerequisites
+Python 3.7+
+Modern web browser
+Local web server (recommended for development)
+Backend Setup
+Install Dependencies
+bash
+pip install fastapi uvicorn sqlite3
+Start the Server
+bash
+uvicorn main:app --reload
+The server will run on http://localhost:8000
+Database Initialization
+Database and tables are created automatically on first run
+SQLite file: ones_to_manys.db
+Frontend Setup
+Serve the Files
+bash
+
+# Option 1: Python simple server
+
+python -m http.server 3000
+
+# Option 2: Node.js serve
+
+npx serve .
+
+# Option 3: Open index.html directly (may have CORS issues)
+
+Access the Application
+Open http://localhost:3000 in your browser
+Ensure the backend is running on port 8000
+Usage Guide
+Creating Orders
+Click "New Order" button in the Orders tab
+Select Customer from dropdown (Alice Johnson, Bob Smith, or Carol Davis)
+Choose Order Date using the date picker
+Add Products:
+Click "Add Item" to create item rows
+Select product from dropdown (Laptop, Mouse, or Keyboard)
+Prices auto-populate based on product selection
+Adjust quantities as needed
+Review Total displayed at bottom
+Click "Create Order" to save
+Managing Items
+Navigate to "Order Items" tab
+View all items across all orders
+Add individual items to existing orders using "New Item"
+Edit or delete items using action buttons
+Analytics
+View Analytics tab for statistics
+See product performance and sales data
+Check date ranges for order history
+Refresh data using the refresh button
+API Endpoints
+Orders
+GET /orders - List all orders
+GET /orders/{id} - Get specific order
+POST /orders - Create new order
+PUT /orders/{id} - Update order
+DELETE /orders/{id} - Delete order
+Order Items
+GET /order-items - List all items
+GET /orders/{order_id}/items - Get items for specific order
+POST /orders/{order_id}/items - Add item to order
+PUT /order-items/{item_id} - Update item
+DELETE /order-items/{item_id} - Delete item
+Advanced
+POST /orders/with-items - Create order with items in one transaction
+GET /stats - Get analytics and statistics
+Data Models
+Order
+javascript
+{
+id: number,
+customer_id: number,
+order_date: string,
+total_amount: number
+}
+Order Item
+javascript
+{
+id: number,
+order_id: number,
+product_id: number,
+quantity: number,
+unit_price: number
+}
+Sample Data
+Customers
+1: Alice Johnson
+2: Bob Smith
+3: Carol Davis
+Products
+1: Laptop Computer - $899.99
+2: Wireless Mouse - $29.99
+3: USB Keyboard - $49.99
+Development Notes
+Key JavaScript Functions
+API Communication (api.js)
+
+apiCall() - Base function for all HTTP requests
+getOrders(), createOrder(), etc. - Order management functions
+getOrderItems(), createOrderItem(), etc. - Item management functions
+Application Logic (app.js)
+
+loadAllData() - Initialize application data
+displayOrders(), displayOrderItems() - Render data to tables
+showCreateOrderModal() - Handle modal interactions
+createOrderWithItems() - Complete order creation workflow
+Utilities (utils.js)
+
+formatDate(), formatCurrency() - Data formatting
+showToast(), showLoading() - User feedback
+validateFormData() - Input validation
+CSS Classes
+Layout
+
+.container - Main application wrapper
+.tab-nav, .tab-button - Navigation system
+.tab-content - Content sections
+Components
+
+.modal, .modal-content - Modal dialogs
+.form-group, .form-row - Form layouts
+.btn, .btn-primary, etc. - Button styles
+Common Issues
+API Connection Errors
+Ensure FastAPI server is running on port 8000
+Check for CORS issues if serving from different ports
+Verify database initialization completed successfully
+Data Display Issues
+Check browser console for JavaScript errors
+Ensure all script files are loading properly
+Verify API responses match expected data structure
+Form Validation Errors
+All required fields must be filled
+Quantities must be positive numbers
+Prices must be non-negative
+At least one item must be added to orders
+Browser Compatibility
+Chrome 60+
+Firefox 55+
+Safari 12+
+Edge 79+
+License
+This project is part of an educational demonstration of JavaScript frontend development with FastAPI backend integration.
+
+Note: This is the VanillaJS implementation of a three-part project that will also include Vue.js and React implementations with shared backend API.
