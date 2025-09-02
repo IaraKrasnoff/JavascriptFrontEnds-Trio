@@ -1,14 +1,32 @@
 import './app.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import OrderList from './components/OrderList';
 import AddOrderForm from './components/AddOrderForm';
-
-const sampleOrders = [];
+import { api } from './utils/api';
 
 export default function App() {
-  const [orders, setOrders] = useState(sampleOrders);
+  const [orders, setOrders] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Load orders from API on component mount
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const ordersData = await api.getOrders();
+      setOrders(ordersData);
+    } catch (error) {
+      console.error('Failed to load orders:', error);
+      alert('Failed to load orders from the server');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDate = (d) => (d ? new Date(d).toLocaleDateString() : '-');
   const formatCurrency = (v) =>
@@ -21,28 +39,37 @@ export default function App() {
     setShowForm(true);
   };
 
-  const handleSave = (orderData, items = [], editingId) => {
-    if (editingId) {
-      setOrders((prev) =>
-        prev.map((o) => (o.id === editingId ? { ...o, ...orderData } : o))
-      );
-    } else {
-      const id = orders.length ? Math.max(...orders.map((o) => o.id)) + 1 : 1;
-      const total_amount = items.reduce(
-        (s, it) => s + it.quantity * it.unit_price,
-        0
-      );
-      setOrders((prev) => [
-        ...prev,
-        {
-          id,
-          customer_id: orderData.customer_id || 1,
+  const handleSave = async (orderData, items = [], editingId) => {
+    try {
+      setLoading(true);
+      
+      if (editingId) {
+        // Update existing order
+        await api.updateOrder(editingId, orderData);
+      } else {
+        // Create new order with items
+        const orderWithItemsData = {
+          customer_id: parseInt(orderData.customer_id),
           order_date: orderData.order_date,
-          total_amount,
-        },
-      ]);
+          items: items.map(item => ({
+            product_id: parseInt(item.product_id),
+            quantity: parseInt(item.quantity),
+            unit_price: parseFloat(item.unit_price),
+          })),
+        };
+        await api.createOrderWithItems(orderWithItemsData);
+      }
+      
+      // Reload orders to get latest data
+      await loadOrders();
+      setShowForm(false);
+      alert('Order saved successfully!');
+    } catch (error) {
+      console.error('Failed to save order:', error);
+      alert('Failed to save order');
+    } finally {
+      setLoading(false);
     }
-    setShowForm(false);
   };
 
   const handleEdit = (id) => {
@@ -50,9 +77,20 @@ export default function App() {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm(`Delete order #${id}?`))
-      setOrders((prev) => prev.filter((o) => o.id !== id));
+  const handleDelete = async (id) => {
+    if (window.confirm(`Delete order #${id}?`)) {
+      try {
+        setLoading(true);
+        await api.deleteOrder(id);
+        await loadOrders();
+        alert('Order deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete order:', error);
+        alert('Failed to delete order');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -63,6 +101,9 @@ export default function App() {
           System
         </h1>
       </header>
+      
+      {loading && <div className="loading">Loading...</div>}
+      
       <OrderList
         orders={orders}
         onEdit={handleEdit}
@@ -70,6 +111,7 @@ export default function App() {
         onCreateNew={handleCreateNew}
         formatDate={formatDate}
         formatCurrency={formatCurrency}
+        loading={loading}
       />
 
       <AddOrderForm
