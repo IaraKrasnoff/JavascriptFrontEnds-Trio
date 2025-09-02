@@ -1,8 +1,4 @@
-To work on React projects:
+cd /Users/iara/Projects/JavascriptFrontEnds-Trio/src/react
 
-Open VS Code
-Open terminal (Ctrl + backtick)
-Navigate to React project: cd  C:\Users\iaras\Documents\Projects\JavascriptFrontEnds-Trio\react-orders-management
-Start server: npm start
-Browser opens to localhost:3000
+npm start
 

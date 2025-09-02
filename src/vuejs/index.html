@@ -37,7 +37,7 @@
 
         <nav class="tab-nav">
           <button class="tab-button" :class="{ active: activeTab === 'orders' }" @click="setActiveTab('orders')">Orders</button>
-          <button class="tab-button" :class="{ active: activeTab === 'items' }" @click="setActiveTab('items')">Order Items</button>
+          <!-- <button class="tab-button" :class="{ active: activeTab === 'items' }" @click="setActiveTab('items')">Order Items</button> -->
           <button class="tab-button" :class="{ active: activeTab === 'analytics' }" @click="setActiveTab('analytics')">Analytics</button>
         </nav>
 
@@ -74,20 +74,7 @@
                       <button class="btn btn-sm btn-primary" @click="editOrder(order)" title="Edit"><i class="fas fa-edit"></i></button>
                       <button class="btn btn-sm btn-danger" @click="deleteOrder(order.id)" title="Delete"><i class="fas fa-trash"></i></button>
                     </div>
-                    <div class="actions-lists">
-                      <details>
-                        <summary>Customers</summary>
-                        <ul>
-                          <li v-for="(name, id) in customers" :key="id">#{{ id }} - {{ name }}</li>
-                        </ul>
-                      </details>
-                      <details>
-                        <summary>Products</summary>
-                        <ul>
-                          <li v-for="(product, id) in products" :key="id">#{{ id }} - {{ product.name }} ({{ formatCurrency(product.price) }})</li>
-                        </ul>
-                      </details>
-                    </div>
+                   
                   </td>
                 </tr>
               </tbody>

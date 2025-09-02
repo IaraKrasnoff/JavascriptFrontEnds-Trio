@@ -383,7 +383,7 @@
   <body>
     <div class="container">
       <header>
-        <h1><i class="fas fa-shopping-cart"></i> Orders Management System</h1>
+        <h1><i class="fas fa-shopping-cart"></i> VanillaJS Orders Management System</h1>
         <div class="stats-bar">
           <div class="stat-item">
             <span class="stat-label">Total Orders:</span>
@@ -1193,7 +1193,7 @@
           (sum, order) => sum + (order.total_amount || 0),
           0
         );
-        const uniqueCustomers = new Set(state.orders.map((o) => o.customer_id))
+        const unique = new Set(state.orders.map((o) => o.customer_id))
           .size;
 
         document.getElementById('productStats').innerHTML = `
