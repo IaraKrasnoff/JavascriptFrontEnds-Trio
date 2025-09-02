@@ -1,5 +1,19 @@
 # Week 8: JavaScript Front-End Development
 
+## Project Screenshots
+
+### Vanilla JavaScript Implementation
+![Vanilla JS Orders Management](src/vanillaJS/Screenshot%20VanillaJS.png)
+![Vanilla JS Create New Order](src/vanillaJS/Screenshot%20VanillaJS%20Create%20New%20Order.png)
+
+### Vue.js Implementation
+![Vue.js Orders Management System](src/vuejs/VueJS%20Order%20management%20System.png)
+![Vue.js Create New Order](src/vuejs/VueJS%20Create%20New%20Order.png)
+
+### React Implementation
+![React Screenshot 1](src/react/React%201Screenshot%202025-08-31%20190106.png)
+![React Screenshot 2](src/react/React2Screenshot%202025-08-31%20190124.png)
+
 ## Assignment Overview
 
 Build three identical Task Manager web applications using different JavaScript technologies to demonstrate the progression from fundamental web development to modern framework patterns. Each implementation will consume the same REST API backend from your previous assignment.
